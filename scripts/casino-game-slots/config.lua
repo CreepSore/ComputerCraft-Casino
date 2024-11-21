@@ -1,0 +1,32 @@
+CFG = {
+    DEBUG="true",
+    MONITOR_SIDE="back",
+    MODEM_SIDE="right",
+    REDSTONE_SIDE="front",
+    CABLE_SIDE="top",
+    CABLE={
+        drive="drive_0",
+        speaker="speaker_0",
+        infusionPedestal0="infusion_pedestal_0",
+        infusionPedestal1="infusion_pedestal_1",
+        infusionPedestal2="infusion_pedestal_2",
+    },
+    PROTO={
+        GET_MAINFRAME="Casino/mainframe/get",
+        USER={
+            NEW="Casino/user/new",
+            INFO="Casino/user/info",
+            TRANSACTION={
+                SUBTRACT="Casino/user/transaction/subtract",
+                ADD="Casino/user/transaction/add"
+            }
+        }
+    },
+    FILES={
+        USERID="disk/userid.dat",
+        LOGON="disk/logon.dat"
+    },
+    GAME={
+        MIN_BET=10
+    }
+}

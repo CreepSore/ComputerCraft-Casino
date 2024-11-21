@@ -1,0 +1,24 @@
+CFG = {
+    DEBUG="true",
+    MONITOR_SIDE="left",
+    MODEM_SIDE="back",
+    SPEAKER_SIDE="top",
+    PROTO={
+        GET_MAINFRAME="Casino/mainframe/get",
+        USER={
+            NEW="Casino/user/new",
+            INFO="Casino/user/info",
+            TRANSACTION={
+                SUBTRACT="Casino/user/transaction/subtract",
+                ADD="Casino/user/transaction/add"
+            }
+        }
+    },
+    FILES={
+        USERID="disk/userid.dat",
+        LOGON="disk/logon.dat"
+    },
+    GAME={
+        MIN_BET=10
+    }
+}

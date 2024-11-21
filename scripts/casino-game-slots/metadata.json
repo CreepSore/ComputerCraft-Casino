@@ -1,0 +1,4 @@
+{
+    "name": "casino-game-slots",
+    "entrypoint": "casino-game-slots.lua"
+}

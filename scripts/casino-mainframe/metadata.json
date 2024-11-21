@@ -1,0 +1,4 @@
+{
+    "name": "casino-mainframe",
+    "entrypoint": "casino-mainframe.lua"
+}

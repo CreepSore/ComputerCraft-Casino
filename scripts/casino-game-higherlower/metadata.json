@@ -1,0 +1,4 @@
+{
+    "name": "casino-game-higherlower",
+    "entrypoint": "casino-game-higherlower.lua"
+}

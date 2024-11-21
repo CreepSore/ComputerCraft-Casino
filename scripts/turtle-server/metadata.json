@@ -1,0 +1,4 @@
+{
+    "name": "turtle-server",
+    "entrypoint": "turtle-server.lua"
+}
