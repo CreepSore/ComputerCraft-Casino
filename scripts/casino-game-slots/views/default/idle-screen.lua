@@ -7,6 +7,7 @@ function showIdleScreen()
     term.clear()
 
     local image = paintutils.loadImage("logo.nfp")
-
-    paintutils.drawImage(image, centerX - 3, centerY - 5)
+    if(image ~= nil) then
+        paintutils.drawImage(image, centerX - 3, centerY - 5)
+    end
 end

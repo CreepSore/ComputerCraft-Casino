@@ -1,0 +1,4 @@
+{
+    "name": "casino-game-roulette",
+    "entrypoint": "casino-game-roulette.lua"
+}

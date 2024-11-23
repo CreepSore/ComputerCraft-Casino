@@ -10,6 +10,22 @@ function createButton(x, y, width, height, text, action, foregroundColor, backgr
         backgroundColor=backgroundColor
     }
 
+    local sW, sH = term.getSize()
+    if(button.width == -1) then
+        button.width = string.len(button.text) + 2
+    end
+    if(button.height == -1) then
+        button.height = 3
+    end
+
+    if(button.width == 0) then
+        button.width = sW - 2
+    end
+
+    if(button.height == 0) then
+        button.height = sH - 2
+    end
+
     table.insert(buttons, button)
 end
 
@@ -42,7 +58,7 @@ end
 function handleMonitorClick(xPos, yPos)
     for _,button in ipairs(buttons) do
         if(xPos >= button.x and xPos < button.x + button.width and yPos >= button.y and yPos < button.y + button.height) then
-            button.action()
+            button.action(button)
         end
     end
 end

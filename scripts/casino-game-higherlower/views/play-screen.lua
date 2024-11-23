@@ -23,23 +23,26 @@ function showPlayScreen(_GS, onError)
     end
 
     local card = math.random(1, 13)
-    local input = nil
     local currentBet = _GS.currentBet
     local lost = false
 
     while(1==1) do
+        local input = nil
         printBackground()
         term.setBackgroundColor(colors.orange)
         term.setTextColor(colors.white)
 
         clearButtons()
+        -- the higher the difference to max or min the higher
+        local higherMultiplier = 1.25 + (card - 1) * (2 - 1.25) / (13 - 1)
+        local lowerMultiplier = 1.25 + (13 - card) * (2 - 1.25) / (13 - 1)
 
         if(lost == false) then
-            createButton(2, height - 8, width - 2, 3, "Higher", function()
+            createButton(2, height - 8, width - 2, 3, "Higher (x"..(math.floor(higherMultiplier*100)/100)..")", function()
                 input = "higher"
             end, colors.white, colors.green)
 
-            createButton(2, height - 4, width - 2, 3, "Lower", function()
+            createButton(2, height - 4, width - 2, 3, "Lower (x"..(math.floor(lowerMultiplier * 100)/100)..")", function()
                 input = "lower"
             end, colors.white, colors.red)
 
@@ -53,7 +56,7 @@ function showPlayScreen(_GS, onError)
         end
 
         centerPrint(currentBet, 1, colors.white, colors.orange)
-        centerPrint("Values are from 1-13: ", 2, colors.white, colors.orange)
+        centerPrint("Values are from 1-13", 2, colors.white, colors.orange)
         fullCenterPrint(card, colors.white, colors.orange)
 
         renderButtons()
@@ -61,7 +64,7 @@ function showPlayScreen(_GS, onError)
 
         if(input ~= nil) then
             if(input == "stop") then
-                transaction_Add(_GS.player.userId, currentBet * 2)
+                transaction_Add(_GS.player.userId, currentBet)
 
                 if(result.error ~= nil) then
                     onError(result.error)
@@ -78,8 +81,13 @@ function showPlayScreen(_GS, onError)
             card = math.random(1, 13);
 
 
-            if((input == "higher" and card >= oldCard) or (input == "lower" and card <= oldCard)) then
-                currentBet = currentBet * 2
+            if(not lost and (input == "higher" and card >= oldCard) or (input == "lower" and card <= oldCard)) then
+                local multiplier = higherMultiplier
+                if(input == "lower") then
+                    multiplier = lowerMultiplier
+                end
+
+                currentBet = math.ceil(currentBet * multiplier)
             else
                 lost = true
             end

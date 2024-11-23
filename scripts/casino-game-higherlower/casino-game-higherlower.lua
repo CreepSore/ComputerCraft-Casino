@@ -12,27 +12,27 @@ local buttons = {}
 
 local _GS = nil
 
-function playWinMusic()
+local function playWinMusic()
     local speaker = peripheral.wrap(CFG.SPEAKER_SIDE)
     speaker.playSound("minecraft:block.note_block.harp", 1, 12)
 end
 
-function playLoseMusic()
+local function playLoseMusic()
     local speaker = peripheral.wrap(CFG.SPEAKER_SIDE)
     speaker.playSound("minecraft:block.note_block.bass", 1, 1)
 end
 
-function playLoginMusic()
+local function playLoginMusic()
     local speaker = peripheral.wrap(CFG.SPEAKER_SIDE)
     speaker.playSound("minecraft:block.note_block.pling", 1, 1)
 end
 
-function playContinueSound()
+local function playContinueSound()
     local speaker = peripheral.wrap(CFG.SPEAKER_SIDE)
     speaker.playSound("minecraft:block.note_block.hat", 1, 1)
 end
 
-function setBet(bet)
+local function setBet(bet)
     if(bet > _GS.player.currency) then
         _GS.currentBet = _GS.player.currency
         playLoseMusic()
@@ -49,7 +49,7 @@ function setBet(bet)
     playContinueSound()
 end
 
-function main()
+local function main()
     monitor = peripheral.wrap(CFG.MONITOR_SIDE)
     monitor.setTextScale(1)
     term.redirect(monitor)
@@ -94,6 +94,16 @@ function main()
                 _GS.continuing = false
                 _GS.quitting = false
                 _GS.player = user_info()
+
+                if(_GS.currentBet > _GS.player.currency) then
+                    _GS.currentBet = _GS.player.currency
+                    if(_GS.currentBet < CFG.GAME.MIN_BET) then
+                        showErrorScreen("Balance too low")
+                        os.pullEvent("disk_eject")
+                        return
+                    end
+                end
+
                 renderBettingScreen(
                     _GS,
                     function(bet) -- onBetUpdated

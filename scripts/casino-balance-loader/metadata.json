@@ -1,0 +1,4 @@
+{
+    "name": "casino-balance-loader",
+    "entrypoint": "casino-balance-loader.lua"
+}

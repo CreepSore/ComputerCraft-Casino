@@ -17,7 +17,7 @@ local CFG = {
     }
 }
 
-function hostProto(proto)
+local function hostProto(proto)
     for k,v in pairs(proto) do
         if(type(v) == "table") then
             hostProto(v)
@@ -28,7 +28,7 @@ function hostProto(proto)
     end
 end
 
-function getUserFromStorage(userId)
+local function getUserFromStorage(userId)
     if(userId == nil) then
         return nil
     end
@@ -47,13 +47,13 @@ end
 --[[
     Userdata = {userId: number, name: string, currency: number}
 ]]
-function saveUserToStorage(userdata)
+local function saveUserToStorage(userdata)
     local userFile = fs.open("users/"..userdata.userId..".dat", "w")
     userFile.write(textutils.serialize(userdata))
     userFile.close()
 end
 
-function getHighestUserId()
+local function getHighestUserId()
     local highestId = 0
     for _,file in ipairs(fs.list("users")) do
         local userId = tonumber(string.match(file, "^%d+"))
@@ -65,7 +65,7 @@ function getHighestUserId()
     return highestId
 end
 
-function startApi()
+local function startApi()
     local protocolHandlers = {}
     protocolHandlers[CFG.PROTO.GET_MAINFRAME] = function(sender, message)
         rednet.send(sender, os.getComputerID(), CFG.PROTO.GET_MAINFRAME)
@@ -158,7 +158,7 @@ function startApi()
     end
 end
 
-function main()
+local function main()
     if(CFG.MONITOR_SIDE ~= nil) then
         local monitor = peripheral.wrap("right")
         monitor.setTextScale(0.5)
