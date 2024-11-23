@@ -6,7 +6,7 @@ CFG = {
         speaker="speaker_2",
         monitor_input="monitor_1",
         monitor_bets="monitor_3",
-        monitor_wheel="monitor_2"
+        monitor_wheel="monitor_2",
     },
     PROTO={
         GET_MAINFRAME="Casino/mainframe/get",
@@ -20,8 +20,26 @@ CFG = {
         }
     },
     FILES={
-        USERID="disk/userid.dat",
-        LOGON="disk/logon.dat"
+        PLAYER_1={
+            USERID="disk/userid.dat",
+            LOGON="disk/logon.dat"
+        },
+        PLAYER_2={
+            USERID="disk2/userid.dat",
+            LOGON="disk2/logon.dat"
+        },
+        PLAYER_3={
+            USERID="disk3/userid.dat",
+            LOGON="disk3/logon.dat"
+        },
+        PLAYER_4={
+            USERID="disk4/userid.dat",
+            LOGON="disk4/logon.dat"
+        },
     },
-    MAX_PLAYERS = 4
+    GAME={
+        MAX_PLAYERS=4,
+        WHEEL_STEPS_MIN=50,
+        WHEEL_STEPS_MAX=100
+    }
 }

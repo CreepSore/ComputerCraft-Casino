@@ -33,20 +33,22 @@ function clearButtons()
     buttons = {}
 end
 
-function renderButtons()
+function renderButtons(filter)
     for _,button in ipairs(buttons) do
-        term.setBackgroundColor(button.backgroundColor)
-        term.setTextColor(button.foregroundColor)
-        term.setCursorPos(button.x, button.y)
-        for y=1, button.height do
-            term.setCursorPos(button.x, button.y + y - 1)
-            for x=1, button.width do
-                term.write(" ")
+        if(filter == nil or filter(button)) then
+            term.setBackgroundColor(button.backgroundColor)
+            term.setTextColor(button.foregroundColor)
+            term.setCursorPos(button.x, button.y)
+            for y=1, button.height do
+                term.setCursorPos(button.x, button.y + y - 1)
+                for x=1, button.width do
+                    term.write(" ")
+                end
             end
-        end
 
-        term.setCursorPos(button.x + math.floor(button.width / 2) - math.floor(string.len(button.text) / 2), button.y + math.floor(button.height / 2))
-        term.write(button.text)
+            term.setCursorPos(button.x + math.floor(button.width / 2) - math.floor(string.len(button.text) / 2), button.y + math.floor(button.height / 2))
+            term.write(button.text)
+        end
     end
 end
 
