@@ -31,6 +31,129 @@ local function playFinishSound(number)
     -- getSpeaker().playNote("hat", 1, (number/36)*12)
 end
 
+local function playLogoutSound()
+    getSpeaker().playSound("minecraft:block.note_block.bass", 1, 1)
+end
+
+local function playLoginSound()
+    getSpeaker().playSound("minecraft:block.note_block.pling", 1, 1)
+end
+
+local function getColorForNumber(number)
+    local result = colors.red
+
+    if(number % 2 == 0) then
+        result = colors.black
+    end
+
+    if(number == 0) then
+        result = colors.green
+    end
+
+    return result
+end
+
+local function renderSpinnerNumber(number, x, y, noNumber)
+    term.setBackgroundColor(getColorForNumber(number))
+    term.setCursorPos(x, y)
+    term.write("    ")
+    term.setCursorPos(x, y+1)
+    local toWrite = " "
+
+    if(noNumber) then
+        toWrite = toWrite.."  "
+    else
+        toWrite = toWrite..number
+
+        if(tostring(number):len() == 1) then
+            toWrite = toWrite .. " "
+        end
+    end
+
+    toWrite = toWrite.." "
+    term.write(toWrite)
+    term.setCursorPos(x, y+2)
+    term.write("    ")
+end
+
+local function renderSpinnerWheel(currentNumber, x, y)
+    local wheel = {0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26}
+    local wheelOffset = 1
+
+    local incrementOffset = function()
+        wheelOffset = wheelOffset + 1
+        if(wheelOffset > #wheel) then
+            wheelOffset = 1
+        end
+    end
+
+    local horizontalCount = 9
+    local verticalCount = 9
+
+    for i=1,horizontalCount do
+        local wheelNum = wheel[wheelOffset]
+        local lx = x + ((i - 1) * 4) + 4
+        local ly = y
+        renderSpinnerNumber(wheelNum, lx, ly)
+        incrementOffset()
+
+        if(wheelNum == currentNumber) then
+            renderSpinnerNumber(wheelNum, lx, ly - 3, true)
+        end
+    end
+
+    for i=1,verticalCount do
+        local wheelNum = wheel[wheelOffset]
+        local lx = 4 + x + (horizontalCount * 4)
+        local ly = y + (i * 3)
+        renderSpinnerNumber(wheelNum, lx, ly)
+        incrementOffset()
+
+        if(wheelNum == currentNumber) then
+            renderSpinnerNumber(wheelNum, lx + 4, ly, true)
+        end
+    end
+
+    for i=1,horizontalCount do
+        local wheelNum = wheel[wheelOffset + (horizontalCount - i)]
+        local lx = x + ((i - 1) * 4) + 4
+        local ly = y + ((verticalCount + 1)*3)
+        renderSpinnerNumber(wheelNum, lx, ly)
+
+        if(wheelNum == currentNumber) then
+            renderSpinnerNumber(wheelNum, lx, ly + 3, true)
+        end
+    end
+
+    for i=1,horizontalCount do
+        incrementOffset()
+    end
+
+    for i=1,verticalCount do
+        local wheelNum = wheel[wheelOffset + (verticalCount - i)]
+        local lx = x
+        local ly = y + (i * 3)
+        renderSpinnerNumber(wheelNum, lx, ly)
+
+        if(wheelNum == currentNumber) then
+            renderSpinnerNumber(wheelNum, lx - 4, ly, true)
+        end
+    end
+end
+
+local function renderSpinner(currentNumber)
+    local monitor = peripheral.wrap(CFG.CABLE.monitor_spinner)
+    local width, height = monitor.getSize()
+    monitor.setTextScale(0.5)
+    local oldTerm = term.redirect(monitor)
+
+    term.setBackgroundColor(colors.orange)
+    term.clear()
+
+    renderSpinnerWheel(currentNumber, (width / 2) - ((4*10)/2), (height / 2) - ((3*10)/2))
+    term.redirect(oldTerm)
+end
+
 local function addNumberButton(number, x, y, onClick, isSelected)
     local monitor = peripheral.wrap(CFG.CABLE.monitor_input)
     local toWrite = number
@@ -40,11 +163,7 @@ local function addNumberButton(number, x, y, onClick, isSelected)
     end
 
     monitor.setCursorPos(x, y)
-    local backgroundColor = colors.red
-
-    if(number % 2 == 0) then
-        backgroundColor = colors.black
-    end
+    local backgroundColor = getColorForNumber(number)
 
     if(isSelected) then
         backgroundColor = colors.yellow
@@ -150,8 +269,6 @@ local function renderPlayingBoard(S, onInput)
     local chipsButtonX = 2
     local chipsButtonY = additionalButtonY + 4
     local chipsButtons = {
-        {label="1", name="chip_1", backgroundColor=colors.red, foregroundColor=colors.white},
-        {label="5", name="chip_5", backgroundColor=colors.red, foregroundColor=colors.white},
         {label="10", name="chip_10", backgroundColor=colors.red, foregroundColor=colors.white},
         {label="25", name="chip_25", backgroundColor=colors.red, foregroundColor=colors.white},
         {label="50", name="chip_50", backgroundColor=colors.red, foregroundColor=colors.white},
@@ -232,6 +349,122 @@ local function renderPlayerTable(S, x, y, width, height)
     end
 end
 
+local function getLoggedInPlayers()
+    local players = {}
+
+    for _, files in pairs(CFG.FILES) do
+        if(fs.exists(files.LOGON)) then
+            local file = fs.open(files.LOGON, "r")
+            local data = textutils.unserialize(file.readAll())
+            file.close()
+
+            table.insert(players, data)
+        end
+    end
+
+    return players
+end
+
+local function drawNumberOnWheel(number)
+    local monitor = peripheral.wrap(CFG.CABLE.monitor_wheel)
+    local color = getColorForNumber(number)
+
+    local width, height = monitor.getSize()
+    monitor.setBackgroundColor(color)
+    monitor.setTextScale(5)
+    monitor.clear()
+    monitor.setCursorPos(width / 2, (height / 2) + 1)
+    monitor.write(number)
+end
+
+local function spinWheel()
+    local wheel = {0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26}
+    local speed = 0.01
+    local steps = math.random(CFG.GAME.WHEEL_STEPS_MIN, CFG.GAME.WHEEL_STEPS_MAX)
+    local currentOffset = math.random(1, #wheel)
+
+    for i=1, steps do
+        if(i > steps - 14) then
+            speed = speed * 1.5
+        end
+
+        currentOffset = currentOffset + 1
+        if(currentOffset > #wheel) then
+            currentOffset = 1
+        end
+
+        drawNumberOnWheel(wheel[currentOffset])
+        renderSpinner(wheel[currentOffset])
+
+        if(i ~= steps) then
+            os.sleep(speed)
+            playInputSound()
+        end
+    end
+
+    playFinishSound()
+    return wheel[currentOffset]
+end
+
+local function waitForPlayers()
+    while(true) do
+        local players = getLoggedInPlayers()
+        if(#players == 0) then
+            local monitor = peripheral.wrap(CFG.CABLE.monitor_bets)
+            local lastTerm = term.redirect(monitor)
+            showIdleScreen()
+
+            monitor = peripheral.wrap(CFG.CABLE.monitor_input)
+            term.redirect(monitor)
+            term.setBackgroundColor(colors.orange)
+            term.clear()
+
+            monitor = peripheral.wrap(CFG.CABLE.monitor_wheel)
+            term.redirect(monitor)
+            drawNumberOnWheel(0)
+            term.redirect(lastTerm)
+        else
+            local resolvedPlayers = {}
+
+            for _, player in pairs(players) do
+                if(player.userId) then
+                    local fetchedInfo = user_infoForId(player.userId)
+
+                    if(fetchedInfo ~= nil) then
+                        table.insert(resolvedPlayers, fetchedInfo)
+                    end
+                end
+            end
+
+            if(#resolvedPlayers > 0) then
+                return resolvedPlayers
+            end
+        end
+
+        os.pullEvent("disk")
+    end
+end
+
+local function getBetsWon(wonNr, bets)
+    local playerWonAmount = {}
+
+    for userId, playerBets in pairs(bets) do
+        local playerWon = 0
+
+        for number, amount in pairs(playerBets) do
+            if(number == wonNr) then
+                playerWon = playerWon + (amount * 36)
+            end
+        end
+
+        if(playerWon > 0) then
+            playerWonAmount[userId] = playerWon
+        end
+    end
+
+    return playerWonAmount
+end
+
 local function renderBetsBoard(S, onInput)
     local monitor = peripheral.wrap(CFG.CABLE.monitor_bets)
     local lastTerm = term.redirect(monitor)
@@ -266,126 +499,6 @@ local function renderBetsBoard(S, onInput)
     term.redirect(lastTerm)
 end
 
-local function getLoggedInPlayers()
-    local players = {}
-
-    for _, files in pairs(CFG.FILES) do
-        if(fs.exists(files.LOGON)) then
-            local file = fs.open(files.LOGON, "r")
-            local data = textutils.unserialize(file.readAll())
-            file.close()
-
-            table.insert(players, data)
-        end
-    end
-
-    return players
-end
-
-local function waitForPlayers()
-    while(true) do
-        local players = getLoggedInPlayers()
-        if(#players == 0) then
-            local monitor = peripheral.wrap(CFG.CABLE.monitor_bets)
-            local lastTerm = term.redirect(monitor)
-            showIdleScreen()
-            monitor = peripheral.wrap(CFG.CABLE.monitor_input)
-            term.redirect(monitor)
-            showIdleScreen()
-            monitor = peripheral.wrap(CFG.CABLE.monitor_wheel)
-            term.redirect(monitor)
-            term.setBackgroundColor(colors.green)
-            term.clear()
-            term.redirect(lastTerm)
-        else
-            local resolvedPlayers = {}
-
-            for _, player in pairs(players) do
-                if(player.userId) then
-                    local fetchedInfo = user_infoForId(player.userId)
-
-                    if(fetchedInfo ~= nil) then
-                        table.insert(resolvedPlayers, fetchedInfo)
-                    end
-                end
-            end
-
-            if(#resolvedPlayers > 0) then
-                return resolvedPlayers
-            end
-        end
-
-        os.pullEvent("disk")
-    end
-end
-
-local function drawNumberOnWheel(number)
-    local monitor = peripheral.wrap(CFG.CABLE.monitor_wheel)
-    local color = colors.black
-    if(number % 2 == 0) then
-        color = colors.red
-    end
-
-    if(number == 0) then
-        color = colors.green
-    end
-
-    local width, height = monitor.getSize()
-    monitor.setBackgroundColor(color)
-    monitor.setTextScale(5)
-    monitor.clear()
-    monitor.setCursorPos(width / 2, (height / 2) + 1)
-    monitor.write(number)
-end
-
-local function spinWheel()
-    local wheel = {0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26}
-    local speed = 0.01
-    local steps = math.random(CFG.GAME.WHEEL_STEPS_MIN, CFG.GAME.WHEEL_STEPS_MAX)
-    local currentOffset = math.random(1, #wheel)
-
-    for i=1, steps do
-        if(i > steps - 14) then
-            speed = speed * 1.5
-        end
-
-        currentOffset = currentOffset + 1
-        if(currentOffset > #wheel) then
-            currentOffset = 1
-        end
-
-        drawNumberOnWheel(wheel[currentOffset])
-
-        if(i ~= steps) then
-            os.sleep(speed)
-            playInputSound()
-        end
-    end
-
-    playFinishSound()
-    return wheel[currentOffset]
-end
-
-local getBetsWon = function(wonNr, bets)
-    local playerWonAmount = {}
-
-    for userId, playerBets in pairs(bets) do
-        local playerWon = 0
-
-        for number, amount in pairs(playerBets) do
-            if(number == wonNr) then
-                playerWon = playerWon + (amount * 36)
-            end
-        end
-
-        if(playerWon > 0) then
-            playerWonAmount[userId] = playerWon
-        end
-    end
-
-    return playerWonAmount
-end
-
 local function runMainLoop()
     local width, height = term.getSize()
     local currentPlayerIndex = 1
@@ -397,6 +510,7 @@ local function runMainLoop()
     local wonNr = -1
     local currentState
     local actions
+    local previousPlayerCount = 0
 
     while(1==1) do
         local players = waitForPlayers()
@@ -407,6 +521,11 @@ local function runMainLoop()
             bets[currentPlayer.userId] = nil
             totalBet = 0
             selectedChips = 0
+        end
+
+        if(#players > previousPlayerCount) then
+            previousPlayerCount = #players
+            playLoginSound()
         end
 
         if(currentState) then
@@ -505,7 +624,7 @@ local function runMainLoop()
                     totalBet = totalBet + selectedChips
                     bets[currentPlayer.userId] = bets[currentPlayer.userId] or {}
                     for i=1, 36 do
-                        if(i % 2 == 0) then
+                        if(i % 2 == 1) then
                             bets[currentPlayer.userId][i] = (bets[currentPlayer.userId][i] or 0) + selectedChips/18
                         end
                     end
@@ -520,7 +639,7 @@ local function runMainLoop()
                     totalBet = totalBet + selectedChips
                     bets[currentPlayer.userId] = bets[currentPlayer.userId] or {}
                     for i=1, 36 do
-                        if(i % 2 == 1) then
+                        if(i % 2 == 0) then
                             bets[currentPlayer.userId][i] = (bets[currentPlayer.userId][i] or 0) + selectedChips/18
                         end
                     end
@@ -556,6 +675,8 @@ local function runMainLoop()
 end
 
 local function main()
+    renderSpinner(0)
+    --
     runMainLoop()
 end
 

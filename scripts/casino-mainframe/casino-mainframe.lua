@@ -105,6 +105,9 @@ local function startApi()
         end
 
         user.currency = user.currency - amount
+        if(user.currency < 1) then
+            user.currency = 1
+        end
         saveUserToStorage(user)
 
         rednet.send(sender, user, CFG.PROTO.USER.TRANSACTION.SUBTRACT)

@@ -6,7 +6,8 @@ CFG = {
         speaker="speaker_2",
         monitor_input="monitor_1",
         monitor_bets="monitor_3",
-        monitor_wheel="monitor_2",
+        monitor_spinner="monitor_2",
+        monitor_wheel="monitor_11"
     },
     PROTO={
         GET_MAINFRAME="Casino/mainframe/get",
