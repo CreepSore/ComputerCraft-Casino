@@ -195,7 +195,7 @@ end
 
 function Grid:onClick(x, y, button)
     if(self.onClickHandler) then
-        if(self.onClickHandler(x, y, button)) then
+        if(self:onClickHandler(x, y, button)) then
             return
         end
     end
@@ -213,7 +213,7 @@ end
 
 function Grid:onTouch(x, y, monitor)
     if(self.onTouchHandler) then
-        if(self.onTouchHandler(x, y, monitor)) then
+        if(self:onTouchHandler(x, y, monitor)) then
             return
         end
     end
@@ -237,3 +237,12 @@ function Grid:setOnTouchHandler(handler)
     self.onTouchHandler = handler
 end
 
+function Grid:update()
+    if(self.panels) then
+        for i, panel in ipairs(self.panels) do
+            if(panel.update) then
+                panel:update()
+            end
+        end
+    end
+end

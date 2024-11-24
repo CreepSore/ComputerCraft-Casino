@@ -1,7 +1,7 @@
 ---@return number, number
 function ui_getRelativePosition(element)
-    local x = element.x - 1
-    local y = element.y - 1
+    local x = element.x
+    local y = element.y
     local width, height = ui_getElementSize(element)
 
     if(element.parent ~= nil) then
@@ -21,8 +21,8 @@ function ui_getRelativePosition(element)
                 y = y + element.margin.top
             end
         elseif(element.anchor == "center") then
-            x = math.ceil((parentWidth - width) / 2)
-            y = math.ceil((parentHeight - height) / 2)
+            x = math.ceil((parentWidth - width) / 2) + x
+            y = math.ceil((parentHeight - height) / 2) + y
         end
 
         x = x + parentX
@@ -33,7 +33,6 @@ function ui_getRelativePosition(element)
         x = x + element.margin.left
         y = y + element.margin.top
     end
-
     return x, y
 end
 

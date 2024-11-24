@@ -1,12 +1,15 @@
 Text = {
+    type="text",
     text = "",
     lines = nil,
     color = nil,
-    x = 1,
-    y = 1,
+    x = 0,
+    y = 0,
     width = 1,
     height = 1,
-    maxWidth = 10
+    maxWidth = 10,
+    anchor="center",
+    autosize=false
 }
 
 function Text:new(obj)
@@ -30,6 +33,10 @@ end
 function Text:setText(text)
     self.text = text
     self.lines = {}
+
+    if(self.autosize) then
+        self.maxWidth = 9999
+    end
 
     local line = ""
     local largestLine = 0
@@ -62,8 +69,15 @@ function Text:setText(text)
 end
 
 function Text:render()
+    if(self.dock == "fill") then
+        local parentWidth, parentHeight = ui_getElementSize(self.parent)
+        self.maxWidth = parentWidth
+        self:setText(self.text)
+    end
+
     local x, y = ui_getRelativePosition(self)
     local width, height = ui_getElementSize(self)
+
 
     term.setTextColor(self.color)
 

@@ -32,5 +32,3 @@ function Button:new(panelOptions, buttonOptions)
 
     return panel
 end
-
-

@@ -25,34 +25,52 @@ function Window(windowHandler)
     local panel = Panel:new({
         x = 1,
         y = 1,
-        backgroundColor = colors.blue,
         dock="fill",
     })
 
     local panel2 = Panel:new({
         x = 1,
         y = 1,
-        width = 20,
-        height = 20,
-        backgroundColor = colors.yellow,
-        anchor="center"
+        backgroundColor = colors.orange,
+        dock="fill"
+    })
+
+    local panel3 = Panel:new({
+        x = 1,
+        y = 1,
+        backgroundColor = colors.orange,
+        dock="fill"
     })
 
     local green = createPanel(colors.green)
     local red = createPanel(colors.red)
+    local blue = createPanel(colors.blue)
+    local yellow = createPanel(colors.yellow)
 
-    local grid = Grid:new(2, 1, {
+    local grid = Grid:new(1, 2, {
         x = 1,
         y = 1,
-        gap = 1,
         dock="fill",
-        margin={top=1, right=1, bottom=1, left=1}
     })
-    grid:addChild(green)
-    grid:addChild(red)
 
-    panel2:addChild(grid)
-    panel:addChild(panel2)
+    grid:setRowHeight(1, 0.6)
+    grid:setRowHeight(2, 0.4)
+
+    local grid2 = Grid:new(4, 1, {
+        x = 1,
+        y = 1,
+        dock="fill",
+    })
+
+    grid2:addChild(green)
+    grid2:addChild(red)
+    grid2:addChild(blue)
+    grid2:addChild(yellow)
+
+    grid:addChild(panel2)
+    grid:addChild(grid2)
+
+    panel:addChild(grid)
 
     windowHandler:registerWindow("window", panel)
 end

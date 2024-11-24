@@ -6,8 +6,8 @@ Panel = {
     children = nil,
     width = 0,
     height = 0,
-    x = 1,
-    y = 1,
+    x = 0,
+    y = 0,
     dock = "none", -- none, fill,
     backgroundColor = nil, -- colors.*,
     margin = nil,
@@ -96,7 +96,7 @@ end
 
 function Panel:onClick(x, y, button)
     if(self.onClickHandler) then
-        if(self.onClickHandler(x, y, button)) then
+        if(self:onClickHandler(x, y, button)) then
             return
         end
     end
@@ -114,7 +114,7 @@ end
 
 function Panel:onTouch(x, y, monitor)
     if(self.onTouchHandler) then
-        if(self.onTouchHandler(x, y, monitor)) then
+        if(self:onTouchHandler(x, y, monitor)) then
             return
         end
     end
@@ -136,4 +136,14 @@ end
 
 function Panel:setOnTouchHandler(handler)
     self.onTouchHandler = handler
+end
+
+function Panel:update()
+    if(self.children) then
+        for i, child in ipairs(self.children) do
+            if(child.update) then
+                child:update()
+            end
+        end
+    end
 end

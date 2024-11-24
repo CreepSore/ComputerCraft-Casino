@@ -1,15 +1,15 @@
 UiHandler = {
     type="ui-handler",
-    state = {},
-    x=1,
-    y=1,
+    state = nil,
+    x=0,
+    y=0,
     width=1,
     height=1,
     windowHandler = nil
 }
 
 function UiHandler:new()
-    local o = {}
+    local o = {state={}}
     setmetatable(o, self)
     self.__index = self
     return o
@@ -48,14 +48,14 @@ function UiHandler:setMonitor(monitor)
     end
 end
 
-function UiHandler:render()
+function UiHandler:render(noMonitor)
     if(self.windowHandler) then
         self:setChild(self.windowHandler:getCurrentWindow())
     end
 
     local oldTerm = nil
-    if(self.monitor) then
-        local oldTerm = term.redirect(self.monitor)
+    if(self.monitor and not noMonitor) then
+        oldTerm = term.redirect(self.monitor)
     end
 
     self.width, self.height = term.getSize()
@@ -70,7 +70,7 @@ function UiHandler:render()
 
     self.child:render()
 
-    if(self.monitor) then
+    if(self.monitor and oldTerm ~= nil and not noMonitor) then
         term.redirect(oldTerm)
     end
 end
@@ -99,4 +99,14 @@ end
 
 function UiHandler:setWindowHandler(windowHandler)
     self.windowHandler = windowHandler
+end
+
+function UiHandler:update()
+    if(self.windowHandler) then
+        self:setChild(self.windowHandler:getCurrentWindow())
+    end
+
+    if(self.child.update) then
+        self.child:update()
+    end
 end

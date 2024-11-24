@@ -1,0 +1,25 @@
+CFG = {
+    DEBUG="true",
+    DEVICES={
+        SPEAKER="speaker_4",
+        IN_PEDESTAL="mysticalagriculture:infusion_pedestal_6",
+        OUT_INVENTORY="minecraft:chest_4",
+        MONITOR="monitor_24",
+        DROPPER="front"
+    },
+    PROTO={
+        GET_MAINFRAME="Casino/mainframe/get",
+        USER={
+            NEW="Casino/user/new",
+            INFO="Casino/user/info",
+            TRANSACTION={
+                SUBTRACT="Casino/user/transaction/subtract",
+                ADD="Casino/user/transaction/add"
+            }
+        }
+    },
+    FILES={
+        USERID="disk/userid.dat",
+        LOGON="disk/logon.dat"
+    }
+}

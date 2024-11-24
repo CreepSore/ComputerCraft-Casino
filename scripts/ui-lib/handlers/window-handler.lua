@@ -1,5 +1,6 @@
 WindowHandler = {
     windows = nil,
+    currentWindowName = nil,
     currentWindow = nil,
     backWindowStack = nil,
     forwardWindowStack = nil
@@ -21,18 +22,23 @@ function WindowHandler:registerWindow(name, panel)
 
     if(self.currentWindow == nil) then
         self.currentWindow = panel
+        self.currentWindowName = name
     end
 end
 
 function WindowHandler:setCurrentWindow(name)
     if(self.windows[name]) then
-        self.currentWindow = self.windows[name]
+        if(self.currentWindow) then
+            if(not self.backWindowStack) then
+                self.backWindowStack = {}
+            end
 
-        if(not self.backWindowStack) then
-            self.backWindowStack = {}
+            table.insert(self.backWindowStack, self.currentWindowName)
         end
 
-        table.insert(self.backWindowStack, WindowHandler:windowToName(self.currentWindow))
+        self.currentWindow = self.windows[name]
+        self.currentWindowName = name
+
         self.forwardWindowStack = {}
     end
 end
@@ -60,6 +66,10 @@ function WindowHandler:forward()
 end
 
 function WindowHandler:windowToName(window)
+    if(not self.windows) then
+        return
+    end
+
     for name, panel in pairs(self.windows) do
         if(panel == window) then
             return name
