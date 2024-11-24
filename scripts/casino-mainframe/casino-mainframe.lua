@@ -33,7 +33,7 @@ local function getUserFromStorage(userId)
         return nil
     end
 
-    if(type(userId) ~= "number") then
+    if(type(userId) ~= "number" and type(userId) ~= "string") then
         return nil
     end
 
