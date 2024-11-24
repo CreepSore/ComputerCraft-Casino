@@ -123,10 +123,18 @@ function Grid:addChildrenToPanel()
     end
 end
 
+function Grid:setColumnWidth(columnNo, width)
+    self.columnWidth[columnNo] = width
+end
+
 function Grid:getColumnWidth(columnNo)
     local width = ui_getElementSize(self)
 
     return math.floor(width * self.columnWidth[columnNo])
+end
+
+function Grid:setRowHeight(rowNo, height)
+    self.rowHeight[rowNo] = height
 end
 
 function Grid:getRowHeight(rowNo)
