@@ -4,6 +4,7 @@ require("/scripts/ui-lib/handlers/window-handler")
 require("/scripts/ui-lib/elements/containers/panel")
 require("/scripts/ui-lib/elements/containers/grid")
 require("/scripts/ui-lib/elements/button")
+require("api/api")
 
 local function getSpeaker()
     return peripheral.wrap(CFG.DEVICES.SPEAKER)
@@ -114,6 +115,7 @@ function main()
     uiHandler.monitor.setTextScale(0.5)
 
     while(1==1) do
+        windowHandler:setCurrentWindow("idle")
         uiHandler:render()
         uiHandler:render(true)
 
@@ -132,6 +134,8 @@ function main()
             end
             os.sleep(0.1)
         end
+
+        transaction_Add(uiHandler.state.player.userId, 10000)
 
         movePedestalItemToOutput()
         playLoginSound()

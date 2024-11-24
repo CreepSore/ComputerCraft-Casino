@@ -5,7 +5,8 @@ CFG = {
         IN_PEDESTAL="mysticalagriculture:infusion_pedestal_6",
         OUT_INVENTORY="minecraft:chest_4",
         MONITOR="monitor_24",
-        DROPPER="front"
+        DROPPER="front",
+        MODEM="top"
     },
     PROTO={
         GET_MAINFRAME="Casino/mainframe/get",
