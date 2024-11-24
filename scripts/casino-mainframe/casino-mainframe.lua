@@ -33,6 +33,10 @@ local function getUserFromStorage(userId)
         return nil
     end
 
+    if(type(userId) ~= "number") then
+        return nil
+    end
+
     if(not fs.exists("users/"..userId..".dat")) then
         return nil
     end
