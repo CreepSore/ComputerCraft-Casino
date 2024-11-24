@@ -1,14 +1,7 @@
-function createButton(x, y, width, height, text, action, foregroundColor, backgroundColor)
-    local button = {
-        x=x,
-        y=y,
-        width=width,
-        height=height,
-        text=text,
-        action=action,
-        foregroundColor=foregroundColor,
-        backgroundColor=backgroundColor
-    }
+local buttons = {}
+
+function createButton(options)
+    local button = options
 
     local sW, sH = term.getSize()
     if(button.width == -1) then
@@ -29,8 +22,19 @@ function createButton(x, y, width, height, text, action, foregroundColor, backgr
     table.insert(buttons, button)
 end
 
-function clearButtons()
-    buttons = {}
+function clearButtons(filter)
+    if(filter == nil) then
+        buttons = {}
+        return
+    end
+
+    local newButtons = {}
+    for _,button in ipairs(buttons) do
+        if(not filter(button)) then
+            table.insert(newButtons, button)
+        end
+    end
+    buttons = newButtons
 end
 
 function renderButtons(filter)
@@ -53,13 +57,19 @@ function renderButtons(filter)
 end
 
 function listenToMonitorClick()
-    local event, button, xPos, yPos = os.pullEvent("monitor_touch")
-    handleMonitorClick(xPos, yPos)
+    local event, side, xPos, yPos = os.pullEvent("monitor_touch")
+    handleMonitorClick(xPos, yPos, side)
 end
 
-function handleMonitorClick(xPos, yPos)
+function handleMonitorClick(xPos, yPos, monitor)
     for _,button in ipairs(buttons) do
-        if(xPos >= button.x and xPos < button.x + button.width and yPos >= button.y and yPos < button.y + button.height) then
+        if(
+            xPos >= button.x
+            and xPos < button.x + button.width
+            and yPos >= button.y
+            and yPos < button.y + button.height
+            and (button.monitor == nil or button.monitor == monitor)
+        ) then
             button.action(button)
         end
     end

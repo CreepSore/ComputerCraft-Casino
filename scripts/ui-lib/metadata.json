@@ -1,0 +1,4 @@
+{
+    "name": "ui-lib",
+    "entrypoint": "test-app.lua"
+}

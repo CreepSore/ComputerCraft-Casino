@@ -1,15 +1,16 @@
 CFG = {
     DEBUG="true",
     MONITOR_SIDE="back",
-    MODEM_SIDE="right",
-    REDSTONE_SIDE="front",
-    CABLE_SIDE="top",
-    CABLE={
-        drive="drive_0",
-        speaker="speaker_0",
-        infusionPedestal0="infusion_pedestal_0",
-        infusionPedestal1="infusion_pedestal_1",
-        infusionPedestal2="infusion_pedestal_2",
+    MODEM_SIDE="top",
+    LEVER_SIDE="back",
+    BLINKING_SIDE="front",
+    DEVICES={
+        speaker="left",
+        monitor="monitor_13",
+        infusionPedestal0="mysticalagriculture:infusion_pedestal_5",
+        infusionPedestal1="mysticalagriculture:infusion_pedestal_4",
+        infusionPedestal2="mysticalagriculture:infusion_pedestal_3",
+        recycleInventory="minecraft:chest_1"
     },
     PROTO={
         GET_MAINFRAME="Casino/mainframe/get",
