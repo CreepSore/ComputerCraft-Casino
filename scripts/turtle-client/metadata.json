@@ -1,4 +1,0 @@
-{
-    "name": "turtle-client",
-    "entrypoint": "turtle-client.lua"
-}
